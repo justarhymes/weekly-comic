@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Comic } from "../../types";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import { Comic } from "@/app/types";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -14,7 +14,7 @@ async function getComic(id: string): Promise<Comic | null> {
     });
     if (!res.ok) return null;
     return res.json();
-  } catch (err) {
+  } catch {
     return null;
   }
 }

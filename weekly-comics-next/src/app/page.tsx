@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Comic } from "@/app/types";
 import ComicCard from "@/app/components/ComicCard";
 import Header from "@/app/components/Header";
@@ -13,31 +13,9 @@ export default function Home() {
   const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const limit = 20;
 
-  useEffect(() => {
-    fetchMore();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 100 &&
-        !loading &&
-        hasMore
-      ) {
-        fetchMore();
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore]);
-
-  async function fetchMore() {
+  const fetchMore = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/comics?skip=${skip}&limit=${limit}`);
@@ -57,13 +35,32 @@ export default function Home() {
         });
         setSkip((prev) => prev + limit);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
-      setInitialLoadComplete(true);
     }
-  }
+  }, [skip]);
+
+  useEffect(() => {
+    fetchMore();
+  }, [fetchMore]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+          document.documentElement.offsetHeight - 100 &&
+        !loading &&
+        hasMore
+      ) {
+        fetchMore();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore, fetchMore]);
 
   return (
     <div className="min-h-screen flex flex-col">
