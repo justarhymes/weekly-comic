@@ -1,0 +1,19 @@
+name: Weekly Comic Sync
+
+on:
+  schedule:
+    - cron: "0 17 * * 3"  # Every Wednesday at 10am PT / 5pm UTC
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger weekly comic sync
+        run: |
+          echo "Running weekly sync..."
+          curl --fail https://weekly-comic.onrender.com/sync/comics?week=new || (
+            echo "First attempt failed. Retrying in 10 minutes..."
+            sleep 600
+            curl --fail https://weekly-comic.onrender.com/sync/comics?week=new
+          )
