@@ -3,10 +3,24 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
+import { Metadata } from "next";
 
-export default async function ComicPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: { id: string };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const res = await fetch(`${API_URL}/comics/${params.id}`);
+  if (!res.ok) return {};
+  const comic: Comic = await res.json();
+  return {
+    title: comic.title,
+  };
+}
 
+export default async function ComicPage({ params }: PageProps) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   const res = await fetch(`${API_URL}/comics/${params.id}`);
   if (!res.ok) return notFound();
 
