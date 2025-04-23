@@ -1,27 +1,28 @@
+// src/app/comics/[id]/page.tsx
+
 import { Comic } from "@/app/types";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
 import { Metadata } from "next";
+import { getRequestContext } from "next/dist/experimental";
 
-interface PageProps {
-  params: { id: string };
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  const res = await fetch(`${API_URL}/comics/${params.id}`);
-  if (!res.ok) return {};
-  const comic: Comic = await res.json();
+export async function generateMetadata(): Promise<Metadata> {
+  const { params } = await getRequestContext();
   return {
-    title: comic.title,
+    title: `Comic #${params.id} | Weekly Comics`,
   };
 }
 
-export default async function ComicPage({ params }: PageProps) {
+export default async function ComicPage() {
+  const { params } = await getRequestContext();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  const res = await fetch(`${API_URL}/comics/${params.id}`);
+
+  const res = await fetch(`${API_URL}/comics/${params.id}`, {
+    cache: "no-store",
+  });
+
   if (!res.ok) return notFound();
 
   const comic: Comic = await res.json();
@@ -31,7 +32,9 @@ export default async function ComicPage({ params }: PageProps) {
       <Header />
       <main className="flex-1 p-4 max-w-2xl mx-auto">
         <div className="mb-4">
-          <Link href="/" className="text-sm text-blue-500 hover:underline">← Back to comics</Link>
+          <Link href="/" className="text-sm text-blue-500 hover:underline">
+            ← Back to comics
+          </Link>
         </div>
         <div className="mb-4">
           {comic.image && (
