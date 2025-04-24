@@ -15,12 +15,12 @@ function getCurrentWeekRange() {
 
 export default function Header() {
   return (
-    <header className="w-full border-b border-foreground/10 p-4 bg-background">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold">
-          Weekly Comic Releases <span className="text-sm font-normal text-muted">({getCurrentWeekRange()})</span>
-        </Link>
-      </div>
+    <header className="w-full text-center p-4">
+        <h1 className="text-4xl font-bold text-white">
+          <Link href="/">
+            Weekly Comic Releases <span className="block text-sm font-normal text-teal-100">({getCurrentWeekRange()})</span>
+          </Link>
+        </h1>
     </header>
   );
 }

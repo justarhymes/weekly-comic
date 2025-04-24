@@ -1,12 +1,12 @@
 export default function Footer() {
   return (
-    <footer className="bg-background text-foreground border-t border-gray-200 dark:border-gray-800 mt-8">
-      <div className="max-w-4xl mx-auto py-4 px-6 text-sm flex justify-between items-center">
+    <footer className="mt-auto">
+      <div className="max-w-4xl mx-auto py-4 px-6 text-sm text-teal-400 flex justify-between items-center">
         <p>
           Data from{' '}
           <a
             href="https://metron.cloud"
-            className="text-fuchsia-500 hover:underline"
+            className="text-rose-500 font-bold hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -17,7 +17,7 @@ export default function Footer() {
           Built by{' '}
           <a
             href="https://www.webdeveloperdude.com"
-            className="text-fuchsia-500 hover:underline"
+            className="text-rose-500 font-bold hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -12,9 +12,9 @@ export default function ComicCard({ comic }: ComicCardProps) {
   const hasData = comic && comic.title && comic.price !== null;
 
   return (
-    <div className="border border-foreground/10 rounded-lg overflow-hidden shadow-sm">
+    <div>
       {hasData ? (
-        <Link href={`/comics/${comic.id}`}>
+        <Link href={`/comics/${comic.id}`} >
           <div>
             {comic.image ? (
               <Image
@@ -27,12 +27,12 @@ export default function ComicCard({ comic }: ComicCardProps) {
             ) : (
               <Skeleton height={450} />
             )}
-            <div className="p-2">
-              <h3 className="font-semibold text-sm line-clamp-2">
+            <div className=" bg-rose-500 p-2">
+              <h3 className="font-semibold text-sm line-clamp-1 text-white">
                 {comic.title}
               </h3>
               { comic.price ? (
-                <p className="text-xs text-gray-500">${comic.price?.toFixed(2)}</p>
+                <p className="text-rose-950 font-bold">${comic.price?.toFixed(2)}</p>
               ) : "" }
             </div>
           </div>

@@ -3,8 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Comic } from "@/app/types";
 import ComicCard from "@/app/components/ComicCard";
-import Header from "@/app/components/Header";
-import Footer from "@/app/components/Footer";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -63,24 +61,20 @@ export default function Home() {
   }, [loading, hasMore, fetchMore]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 p-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {comics.map((comic) => (
-            <ComicCard key={`${comic.metron_id}-${comic.issue_number}`} comic={comic} />
-          ))}
+    <main className="flex-1 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {comics.map((comic) => (
+          <ComicCard key={`${comic.metron_id}-${comic.issue_number}`} comic={comic} />
+        ))}
+      </div>
+      {loading && (
+        <div className="mt-8 flex justify-center" aria-hidden>
+          <div className="h-6 w-6 border-2 border-t-transparent border-foreground rounded-full animate-spin"></div>
         </div>
-        {loading && (
-          <div className="mt-8 flex justify-center" aria-hidden>
-            <div className="h-6 w-6 border-2 border-t-transparent border-foreground rounded-full animate-spin"></div>
-          </div>
-        )}
-        <p className="sr-only" aria-live="polite">
-          {loading ? "Loading more comics..." : !hasMore ? "No more comics to load." : ""}
-        </p>
-      </main>
-      <Footer />
-    </div>
-  );
+      )}
+      <p className="sr-only" aria-live="polite">
+        {loading ? "Loading more comics..." : !hasMore ? "No more comics to load." : ""}
+      </p>
+    </main>
+  )
 }

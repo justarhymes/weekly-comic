@@ -6,8 +6,8 @@ from app.db.database import get_session
 import app.crud as crud
 from app.services.metron import fetch_metron_issues_for_week
 from datetime import datetime, timedelta, date
+from app.utils.comic_builder import build_comic_data
 import os
-from pprint import pprint
 import argparse
 
 router = APIRouter()
@@ -18,13 +18,6 @@ parser.add_argument("--year", type=int, default=2000, help="Starting year (defau
 args, _ = parser.parse_known_args()
 START_YEAR = args.year
 END_YEAR = date.today().year
-
-def nested_get(obj, *attrs, default=None):
-    for attr in attrs:
-        obj = getattr(obj, attr, None)
-        if obj is None:
-            return default
-    return obj
 
 @router.post("/comics/", response_model=Comic)
 def create(comic: Comic, session: Session = Depends(get_session)):
@@ -75,11 +68,11 @@ def delete(comic_id: int, session: Session = Depends(get_session)):
 def sync_comics(
     week: str = Query("new", enum=["new", "previous", "future", "date"]),
     date_str: Optional[str] = Query(None, alias="date"),
-    publisher: Optional[str] = Query(None),
+    publisher: Optional[str] = None,
+    dry_run: bool = Query(False, description="If true, simulate the sync without committing changes"),
     session: Session = Depends(get_session)
 ):
     today = date.today()
-
     if week == "previous":
         target = today - timedelta(weeks=1)
     elif week == "future":
@@ -93,47 +86,25 @@ def sync_comics(
 
     issues = fetch_metron_issues_for_week(target, publisher)
     for issue in issues:
-        series = issue.series
-        comic_data = dict(
-            title=f"{series.name} #{issue.number}",
-            publisher=series.name,
-            release_date=issue.cover_date,
-            issue_number=issue.number,
-            image=str(getattr(issue, "image", None)) if getattr(issue, "image", None) else None,
-            api_source="metron",
-            is_custom=False,
-            summary=getattr(issue, "desc", None),
-            page_count=issue.page_count,
-            price=issue.price,
-            rating=nested_get(issue, "rating", "name"),
-            distributor_sku=getattr(issue, "sku", None),
-            upc=issue.upc,
-            metron_id=issue.id,
-            comicvine_id=getattr(issue, "cv_id", None),
-            gcd_id=issue.gcd_id,
-            series_name=series.name
-        )
-
+        comic_data = build_comic_data(issue)
         exists = session.exec(
-            select(Comic).where(
-                Comic.title == comic_data["title"],
-                Comic.publisher == comic_data["publisher"],
-                Comic.release_date == comic_data["release_date"]
-            )
+            select(Comic).where(Comic.metron_id == comic_data["metron_id"])
         ).first()
 
         if exists:
-            updated = False
             for key, value in comic_data.items():
-                if getattr(exists, key) != value:
-                    setattr(exists, key, value)
-                    updated = True
-            if updated:
-                print(f"🔄 Updated comic: {comic_data['title']}")
+                setattr(exists, key, value)
+            print(f"🔄 Would update: {comic_data['title']}" if dry_run else f"🔄 Updated comic: {comic_data['title']}")
+            if not dry_run:
                 session.add(exists)
         else:
-            print(f"➕ Adding comic: {comic_data['title']}")
-            session.add(Comic(**comic_data))
+            print(f"➕ Would add: {comic_data['title']}" if dry_run else f"➕ Adding comic: {comic_data['title']}")
+            if not dry_run:
+                session.add(Comic(**comic_data))
 
-    session.commit()
+    if not dry_run:
+        session.commit()
+    else:
+        print("✅ Dry run complete. No changes committed.")
+
     return crud.read_comics_by_date(target, session=session)

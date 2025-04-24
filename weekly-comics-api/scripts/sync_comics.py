@@ -1,12 +1,15 @@
+# scripts/sync_comics.py
+
 import argparse
 from datetime import date, timedelta
-from app.db.database import SessionLocal
-from app.services.metron import fetch_metron_issues_for_week
+from app.db.database import engine
+from sqlmodel import Session, select
 from app.models import Comic
-from app.routes.comics import nested_get
+from app.services.metron import fetch_metron_issues_for_week
+from app.utils.comic_builder import build_comic_data
 
 
-def sync_weekly_comics(week: str, publisher: str | None = None):
+def sync_weekly_comics(week: str, publisher: str | None = None, dry_run: bool = False):
     today = date.today()
 
     if week == "new":
@@ -22,43 +25,30 @@ def sync_weekly_comics(week: str, publisher: str | None = None):
     issues = fetch_metron_issues_for_week(target_date, publisher=publisher)
     print(f"Found {len(issues)} issues for week: {target_date.isoformat()} (Publisher: {publisher or 'All'})")
 
-    session = SessionLocal()
+    session = Session(engine)
 
     for issue in issues:
-        title = f"{nested_get(issue, 'series.name')} #{nested_get(issue, 'number')}"
-        release_date = nested_get(issue, "store_date")
-
-        existing = session.query(Comic).filter_by(title=title, release_date=release_date).first()
-
-        data = Comic(
-            title=title,
-            publisher=nested_get(issue, "publisher.name"),
-            release_date=release_date,
-            issue_number=nested_get(issue, "number"),
-            image=str(nested_get(issue, "image")) if nested_get(issue, "image") else None,
-            api_source="metron",
-            is_custom=False,
-            summary=nested_get(issue, "desc"),
-            page_count=nested_get(issue, "page_count"),
-            price=float(nested_get(issue, "price")) if nested_get(issue, "price") else None,
-            rating=nested_get(issue, "rating.name"),
-            distributor_sku=nested_get(issue, "sku"),
-            upc=nested_get(issue, "upc"),
-            metron_id=nested_get(issue, "id"),
-            comicvine_id=nested_get(issue, "cv_id"),
-            gcd_id=nested_get(issue, "gcd_id"),
-            series_name=nested_get(issue, "series.name")
-        )
+        comic_data = build_comic_data(issue)
+        existing = session.exec(
+            select(Comic).where(Comic.metron_id == comic_data["metron_id"])
+        ).first()
 
         if existing:
-            for field in data.model_fields:
-                setattr(existing, field, getattr(data, field))
-            print(f"🔁 Updated: {title}")
+            for key, value in comic_data.items():
+                setattr(existing, key, value)
+            print(f"🔄 Would update: {comic_data['title']}" if dry_run else f"🔄 Updated comic: {comic_data['title']}")
+            if not dry_run:
+                session.add(existing)
         else:
-            session.add(data)
-            print(f"➕ Added: {title}")
+            print(f"➕ Would add: {comic_data['title']}" if dry_run else f"➕ Added comic: {comic_data['title']}")
+            if not dry_run:
+                session.add(Comic(**comic_data))
 
-    session.commit()
+    if not dry_run:
+        session.commit()
+    else:
+        print("✅ Dry run complete. No changes committed.")
+
     session.close()
     print("✅ Sync complete.")
 
@@ -67,6 +57,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sync comics for a given week.")
     parser.add_argument("--week", type=str, default="new", help="Specify 'new', 'previous', or an ISO date (YYYY-MM-DD)")
     parser.add_argument("--publisher", type=str, help="(Optional) Filter by publisher")
-
+    parser.add_argument("--dry-run", action="store_true", help="Run sync in dry run mode")
     args = parser.parse_args()
-    sync_weekly_comics(args.week, args.publisher)
+    sync_weekly_comics(args.week, args.publisher, dry_run=args.dry_run)
