@@ -9,6 +9,7 @@ class Comic(SQLModel, table=True):
     release_date: date
     issue_number: Optional[str] = None
     image: Optional[str] = None
+    blur_data_url: Optional[str] = Field(default=None, sa_column_kwargs={"nullable": True})
     api_source: Optional[str] = None
     is_custom: bool = False
     summary: Optional[str] = None

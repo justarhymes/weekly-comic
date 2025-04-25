@@ -63,8 +63,12 @@ export default function Home() {
   return (
     <main className="flex-1 p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {comics.map((comic) => (
-          <ComicCard key={`${comic.metron_id}-${comic.issue_number}`} comic={comic} />
+        {comics.map((comic, index) => (
+          <ComicCard 
+            key={`${comic.metron_id}-${comic.issue_number}`} 
+            comic={comic}
+            priority={index < 4}
+          />
         ))}
       </div>
       {loading && (
@@ -72,9 +76,9 @@ export default function Home() {
           <div className="h-6 w-6 border-2 border-t-transparent border-foreground rounded-full animate-spin"></div>
         </div>
       )}
-      <p className="sr-only" aria-live="polite">
+      <div role="status" aria-live="polite" className="sr-only">
         {loading ? "Loading more comics..." : !hasMore ? "No more comics to load." : ""}
-      </p>
+      </div>
     </main>
   )
 }

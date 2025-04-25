@@ -5,6 +5,7 @@ export interface Comic {
   release_date: string;
   issue_number?: string;
   image?: string;
+  blur_data_url?: string;
   api_source?: string;
   is_custom: boolean;
   summary?: string;
@@ -17,4 +18,15 @@ export interface Comic {
   comicvine_id?: number;
   gcd_id?: number;
   series_name?: string;
+
+  series?: {
+    name?: string;
+    publisher?: string;
+    type?: string;
+    genre?: string | string[];
+    status?: string;
+    volume?: number;
+    start_year?: number;
+    num_issues?: number;
+  };
 }
