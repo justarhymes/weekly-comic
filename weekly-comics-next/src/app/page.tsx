@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 import { Comic } from "@/app/types";
 import ComicCard from "@/app/components/ComicCard";
 
@@ -62,15 +63,22 @@ export default function Home() {
 
   return (
     <main className="flex-1 p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true, amount: 0.2 }}
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+      >
         {comics.map((comic, index) => (
           <ComicCard 
             key={`${comic.metron_id}-${comic.issue_number}`} 
             comic={comic}
             priority={index < 4}
+            index={index}
           />
         ))}
-      </div>
+      </motion.div>
       {loading && (
         <div className="mt-8 flex justify-center" aria-hidden>
           <div className="h-6 w-6 border-2 border-t-transparent border-foreground rounded-full animate-spin"></div>

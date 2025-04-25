@@ -8,9 +8,10 @@ import { Comic } from "@/app/types";
 interface ComicCardProps {
   comic: Comic;
   priority?: boolean;
+  index: number;
 }
 
-export default function ComicCard({ comic, priority = false }: ComicCardProps) {
+export default function ComicCard({ comic, priority = false, index = 0 }: ComicCardProps) {
   const hasData = comic && comic.title && comic.price !== null;
   const titleId = `comic-${comic.id}`;
   const priceId = `comic-price-${comic.id}`;
@@ -19,7 +20,11 @@ export default function ComicCard({ comic, priority = false }: ComicCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{
+        duration: 0.4,
+        ease: "easeOut",
+        delay: index * 0.05,
+      }}
     >
       {hasData ? (
         <Link 
