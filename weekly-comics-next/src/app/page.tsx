@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { Comic } from "@/app/types";
 import ComicCard from "@/app/components/ComicCard";
@@ -25,9 +25,9 @@ function getEndOfWeek() {
   return end;
 }
 
-function debounce(func: (...args: any[]) => void, wait: number) {
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: NodeJS.Timeout;
-  return (...args: any[]) => {
+  return (...args: Parameters<T>) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
@@ -42,8 +42,19 @@ export default function Home() {
   const [dotCount, setDotCount] = useState(0);
   const limit = 20;
 
+  const skipRef = useRef(skip);
+  const initialLoadingRef = useRef(initialLoading);
+
+  useEffect(() => {
+    skipRef.current = skip;
+  }, [skip]);
+
+  useEffect(() => {
+    initialLoadingRef.current = initialLoading;
+  }, [initialLoading]);
+
   const fetchMore = useCallback(async () => {
-    if (initialLoading) {
+    if (initialLoadingRef.current) {
       setInitialLoading(true);
     } else {
       setLoadingMore(true);
@@ -52,7 +63,9 @@ export default function Home() {
       const startOfWeek = getStartOfWeek();
       const endOfWeek = getEndOfWeek();
 
-      const res = await fetch(`${API_URL}/comics?skip=${skip}&limit=${limit}&start_date=${startOfWeek.toISOString().slice(0,10)}&end_date=${endOfWeek.toISOString().slice(0,10)}`);
+      const res = await fetch(
+        `${API_URL}/comics?skip=${skipRef.current}&limit=${limit}&start_date=${startOfWeek.toISOString().slice(0, 10)}&end_date=${endOfWeek.toISOString().slice(0, 10)}`
+      );
       if (!res.ok) throw new Error("Failed to fetch comics");
       const newComics: Comic[] = await res.json();
 
@@ -78,11 +91,11 @@ export default function Home() {
       setInitialLoading(false);
       setLoadingMore(false);
     }
-  }, [skip, initialLoading]);
+  }, []);
 
   useEffect(() => {
     fetchMore();
-  }, []);
+  }, [fetchMore]);
 
   useEffect(() => {
     const handleScroll = debounce(() => {
@@ -139,7 +152,7 @@ export default function Home() {
         </motion.div>
       ) : (
         <>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
@@ -157,7 +170,10 @@ export default function Home() {
           </motion.div>
           {loadingMore && (
             <div className="flex justify-center items-center mt-8" aria-hidden>
-              <div className="h-6 w-6 border-4 border-t-transparent border-rose-400 rounded-full animate-spin" style={{ animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)" }}></div>
+              <div
+                className="h-6 w-6 border-4 border-t-transparent border-rose-400 rounded-full animate-spin"
+                style={{ animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)" }}
+              ></div>
             </div>
           )}
         </>
