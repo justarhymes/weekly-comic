@@ -1,6 +1,7 @@
 export interface Comic {
   id: number;
   title: string;
+  slug?: string;
   publisher: string;
   release_date: string;
   issue_number?: string;
@@ -21,6 +22,7 @@ export interface Comic {
 
   series?: {
     name?: string;
+    slug?: string;
     publisher?: string;
     type?: string;
     genre?: string | string[];

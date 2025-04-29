@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ComicPageClient from "./ComicPageClient";
 
-export async function generateMetadata(
-  props: { params: Promise<{ id: string }> }
-): Promise<Metadata> {
-  const { id } = await props.params;
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const { slug } = await params;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-  const res = await fetch(`${API_URL}/comics/${id}`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/comics/${slug}`, { cache: "no-store" });
   const comic = await res.json();
 
   return {
@@ -31,21 +33,19 @@ export async function generateMetadata(
 export default async function ComicPage({
   params,
 }: {
-  params: { id: string };
+  params: { slug: string };
 }) {
-  const { id } = await params;
+  const { slug } = await params;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-  const res = await fetch(`${API_URL}/comics/${id}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(`${API_URL}/comics/${slug}`, { cache: "no-store" });
 
   if (res.status === 404) {
     return notFound();
   }
-  
+
   if (!res.ok) {
-    throw new Error(`Failed to fetch comic ${id}: ${res.statusText}`);
+    throw new Error(`Failed to fetch comic ${slug}: ${res.statusText}`);
   }
 
   const comic = await res.json();

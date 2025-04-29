@@ -7,8 +7,10 @@ function getCurrentWeekRange() {
   const start = startOfWeek(new Date(), { weekStartsOn: 0 });
   const end = endOfWeek(new Date(), { weekStartsOn: 0 });
 
+  const sameMonth = start.getMonth() === end.getMonth();
+
   const formattedStart = format(start, "MMMM do");
-  const formattedEnd = format(end, "do");
+  const formattedEnd = sameMonth ? format(end, "do") : format(end, "MMMM do");
 
   return `${formattedStart} - ${formattedEnd}`;
 }

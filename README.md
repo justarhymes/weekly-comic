@@ -1,18 +1,16 @@
 # Weekly Comics Platform
 
-This monorepo powers the Weekly Comics API and (eventually) frontend. It's designed to sync, store, and query weekly comic book releases from the [Metron API](https://metron.cloud).
+This monorepo powers the Weekly Comics API and frontend. It's designed to sync, store, and query weekly comic book releases from the [Metron API](https://metron.cloud).
 
 ## 🔧 Setup (Local API & Database)
 
 ### 1. Clone the repository
-
 ```bash
-git clone https://github.com/justarhymes/weekly-comic.git
+https://github.com/justarhymes/weekly-comic.git
 cd weekly-comic
 ```
 
-### 2. Set up Python environment
-
+### 2. Set up Python environment for backend
 ```bash
 cd weekly-comics-api
 python3 -m venv venv
@@ -20,30 +18,32 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Environment variables
-
-Copy and edit `.env`:
-
+### 3. Set up environment variables
 ```bash
 cp .env.example .env
 ```
 
-Required values:
-
-```
+Fill in:
+```env
 DATABASE_URL=postgresql://user:password@localhost:5432/your_db
 METRON_USERNAME=your_username
 METRON_PASSWORD=your_password
 ENV=development
 ```
 
-### 4. Start the server
-
+### 4. Start backend server
 ```bash
 uvicorn app.main:app --reload
 ```
+Server runs at: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-Access it at: [http://localhost:8000/docs](http://localhost:8000/docs)
+### 5. Set up frontend (Next.js)
+```bash
+cd weekly-comics-next
+npm install
+npm run dev
+```
+Frontend runs at: [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -54,21 +54,16 @@ weekly-comic/
 ├── weekly-comics-api/         # FastAPI backend
 │   ├── app/                   # Source code
 │   ├── scripts/               # CLI tools for syncing
+|   ├── render.yaml            # Deployment config
 │   ├── requirements.txt       # Python dependencies
 │   └── .env.example           # Sample environment config
-└── (frontend coming soon)
+└── weekly-comics-next/        # Next.js frontend
 ```
 
 ---
 
 ## 🔍 Next Steps
-- Add `README.md` inside `weekly-comics-api/` with API documentation
-- Set up a PostgreSQL database
-- Build the frontend (`weekly-comics-next`)
-- Deploy backend and frontend
-
----
+- TBD
 
 ## ✨ License
 MIT
-

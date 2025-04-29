@@ -1,4 +1,5 @@
 from app.utils.nested import nested_get
+from app.utils.slugify import slugify
 from PIL import Image
 import requests
 from io import BytesIO
@@ -10,7 +11,7 @@ def generate_blur_data_url(image_url: str) -> str | None:
         response.raise_for_status()
         image = Image.open(BytesIO(response.content))
         image = image.convert("RGB")
-        
+
         try:
             resample = Image.Resampling.LANCZOS
         except AttributeError:
@@ -28,10 +29,11 @@ def generate_blur_data_url(image_url: str) -> str | None:
 def build_comic_data(issue):
     series = issue.series
     image_url = str(getattr(issue, "image", None)) if getattr(issue, "image", None) else None
-    blur_data_url = blur_data_url = generate_blur_data_url(image_url) if image_url else None
+    blur_data_url = generate_blur_data_url(image_url) if image_url else None
 
     return {
         "title": f"{series.name} #{issue.number}",
+        "slug": slugify(f"{series.name}-{issue.number}"),
         "release_date": nested_get(issue, "store_date"),
         "issue_number": issue.number,
         "image": image_url,
@@ -49,6 +51,7 @@ def build_comic_data(issue):
         "gcd_id": issue.gcd_id,
         "series": {
             "name": series.name,
+            "slug": slugify(series.name),
             "volume": series.volume,
             "start_year": getattr(series, "year_began", None),
             "type": nested_get(series, "series_type", "name"),

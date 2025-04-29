@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlmodel import Session, select, text
+from sqlalchemy import Integer
 from typing import Optional, List
 from app.models import Comic
 from app.db.database import get_session
@@ -30,21 +31,29 @@ def get_all(
     publisher: Optional[str] = None,
     title: Optional[str] = None,
     api_source: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
     session: Session = Depends(get_session)
 ):
     query = select(Comic)
     if publisher:
-        query = query.where(Comic.publisher == publisher)
+        query = query.where(Comic.series["publisher"].astext == publisher)
     if title:
         query = query.where(Comic.title.ilike(f"%{title}%"))
     if api_source:
         query = query.where(Comic.api_source == api_source)
+    if start_date and end_date:
+        query = query.where(Comic.release_date.between(start_date, end_date))
+
     query = query.offset(skip).limit(limit)
     return session.exec(query).all()
 
-@router.get("/comics/{comic_id}", response_model=Comic)
-def get_one(comic_id: int, session: Session = Depends(get_session)):
-    return crud.read_comic(comic_id, session=session)
+@router.get("/comics/{slug}", response_model=Comic)
+def get_one(slug: str, session: Session = Depends(get_session)):
+    comic = session.exec(select(Comic).where(Comic.slug == slug)).first()
+    if not comic:
+        raise HTTPException(status_code=404, detail="Comic not found")
+    return comic
 
 @router.put("/comics/{comic_id}", response_model=Comic)
 def update(comic_id: int, comic: Comic, session: Session = Depends(get_session)):
@@ -94,7 +103,7 @@ def sync_comics(
         if exists:
             for key, value in comic_data.items():
                 setattr(exists, key, value)
-            print(f"🔄 Would update: {comic_data['title']}" if dry_run else f"🔄 Updated comic: {comic_data['title']}")
+            print(f"\U0001f501 Would update: {comic_data['title']}" if dry_run else f"\U0001f501 Updated comic: {comic_data['title']}")
             if not dry_run:
                 session.add(exists)
         else:
@@ -108,3 +117,19 @@ def sync_comics(
         print("✅ Dry run complete. No changes committed.")
 
     return crud.read_comics_by_date(target, session=session)
+
+@router.get("/comics/series/{series_slug}/{start_year}", response_model=List[Comic])
+def get_comics_by_series(
+    series_slug: str,
+    start_year: int,
+    session: Session = Depends(get_session)
+):
+    query = (
+        select(Comic)
+        .where(
+            Comic.series["slug"].astext == series_slug,
+            Comic.series["start_year"].astext.cast(Integer) == start_year
+        )
+        .order_by(Comic.issue_number.asc())
+    )
+    return session.exec(query).all()

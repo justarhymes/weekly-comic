@@ -26,7 +26,7 @@ export default function ComicImage({
         alt={alt || "Comic Cover"}
         width={width}
         height={height}
-        className={`w-full h-auto object-cover shadow ${className}`}
+        className={`w-full h-auto object-cover shadow-[5px_5px_0px_0px] shadow-teal-400 ${className}`}
         placeholder={blurDataURL ? "blur" : "empty"}
         blurDataURL={blurDataURL}
         priority

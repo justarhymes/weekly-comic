@@ -8,7 +8,10 @@ import SeriesMeta from "@/app/components/SeriesMeta";
 import SeriesDetails from "@/app/components/SeriesDetails";
 import IssueDetails from "@/app/components/IssueDetails";
 import ComicSchema from "@/app/components/ComicSchema";
+import CreatorsList from "@/app/components/CreatorsList";
+import OtherIssuesGrid from "@/app/components/OtherIssuesGrid";
 import Link from "next/link";
+import { formatPrice } from "@/app/utils/formatPrice";
 
 export default function ComicPageClient({ comic }: { comic: any }) {
   const series = comic.series || {};
@@ -23,7 +26,10 @@ export default function ComicPageClient({ comic }: { comic: any }) {
 
         <motion.article {...fadeUp(0.1)}>
           <header>
-            <h1 className="text-3xl mt-5 font-bold mb-8">{comic.title}</h1>
+            <h1 className="text-3xl mt-5 font-bold mb-2">{comic.title}</h1>
+            <p id={`comic-price-${comic.id}`} className="text-rose-500 font-semibold mb-8">
+              {formatPrice(comic)}
+            </p>
             <SeriesMeta 
               publisher={series.publisher} 
               type={series.type} 
@@ -49,12 +55,30 @@ export default function ComicPageClient({ comic }: { comic: any }) {
                 genre={series.genre} 
               />
               <ComicSummary summary={comic.summary} />
+
+              {comic.creators && comic.creators.length > 0 && (
+                <CreatorsList creators={comic.creators} />
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <IssueDetails comic={comic} />
                 <SeriesDetails series={series} />
+
               </div>
+              
+              {series.name && series.start_year && series.slug && (
+                <OtherIssuesGrid 
+                  seriesName={series.name} 
+                  seriesSlug={series.slug}
+                  startYear={series.start_year} 
+                  comicId={comic.id} 
+                />
+              )}
+
             </motion.div>
+
           </div>
+
         </motion.article>
       </motion.main>
     </>

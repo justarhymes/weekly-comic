@@ -4,6 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import { motion } from "framer-motion";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Comic } from "@/app/types";
+import { formatPrice } from "@/app/utils/formatPrice";
 
 interface ComicCardProps {
   comic: Comic;
@@ -12,7 +13,7 @@ interface ComicCardProps {
 }
 
 export default function ComicCard({ comic, priority = false, index = 0 }: ComicCardProps) {
-  const hasData = comic && comic.title && comic.price !== null;
+  const hasData = comic && comic.title && comic.image;
   const titleId = `comic-${comic.id}`;
   const priceId = `comic-price-${comic.id}`;
 
@@ -28,9 +29,9 @@ export default function ComicCard({ comic, priority = false, index = 0 }: ComicC
     >
       {hasData ? (
         <Link 
-          href={`/comics/${comic.id}`}
+          href={`/comics/${comic.slug}`}
           aria-labelledby={titleId}
-          aria-describedby={comic.price ? priceId : undefined}
+          aria-describedby={priceId}
           className="focus:outline-none focus-visible:ring-4 focus-visible:ring-rose-500 block"
           title={`View details for ${comic.title}`}
         >
@@ -56,14 +57,12 @@ export default function ComicCard({ comic, priority = false, index = 0 }: ComicC
               >
                 {comic.title}
               </h3>
-              { comic.price ? (
-                <p 
-                  id={priceId}
-                  className="text-rose-950 font-bold"
-                >
-                  ${comic.price?.toFixed(2)}
-                </p>
-              ) : "" }
+              <p 
+                id={priceId}
+                className="text-rose-950 font-bold"
+              >
+                {formatPrice(comic)}
+              </p>
             </div>
           </article>
         </Link>
