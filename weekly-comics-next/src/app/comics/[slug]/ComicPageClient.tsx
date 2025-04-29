@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { fadeUp, fadeIn } from "@/app/components/animations/sharedAnimations";
 import ComicImage from "@/app/components/ComicImage";
@@ -10,10 +11,10 @@ import IssueDetails from "@/app/components/IssueDetails";
 import ComicSchema from "@/app/components/ComicSchema";
 import CreatorsList from "@/app/components/CreatorsList";
 import OtherIssuesGrid from "@/app/components/OtherIssuesGrid";
-import Link from "next/link";
 import { formatPrice } from "@/app/utils/formatPrice";
+import { Comic } from "@/app/types";
 
-export default function ComicPageClient({ comic }: { comic: any }) {
+export default function ComicPageClient({ comic }: { comic: Comic }) {
   const series = comic.series || {};
 
   return (
@@ -63,22 +64,18 @@ export default function ComicPageClient({ comic }: { comic: any }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <IssueDetails comic={comic} />
                 <SeriesDetails series={series} />
-
               </div>
-              
-              {series.name && series.start_year && series.slug && (
-                <OtherIssuesGrid 
-                  seriesName={series.name} 
-                  seriesSlug={series.slug}
-                  startYear={series.start_year} 
-                  comicId={comic.id} 
-                />
-              )}
-
             </motion.div>
-
           </div>
 
+          {series.name && series.start_year && series.slug && (
+            <OtherIssuesGrid 
+              seriesName={series.name} 
+              seriesSlug={series.slug}
+              startYear={series.start_year} 
+              comicId={comic.id} 
+            />
+          )}
         </motion.article>
       </motion.main>
     </>

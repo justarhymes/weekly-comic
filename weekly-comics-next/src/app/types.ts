@@ -2,7 +2,6 @@ export interface Comic {
   id: number;
   title: string;
   slug?: string;
-  publisher: string;
   release_date: string;
   issue_number?: string;
   image?: string;
@@ -18,14 +17,16 @@ export interface Comic {
   metron_id?: number;
   comicvine_id?: number;
   gcd_id?: number;
-  series_name?: string;
-
+  creators?: {
+    name: string;
+    roles: string[];
+  }[];
   series?: {
     name?: string;
     slug?: string;
     publisher?: string;
     type?: string;
-    genre?: string | string[];
+    genre?: string[];
     status?: string;
     volume?: number;
     start_year?: number;
