@@ -5,7 +5,7 @@ import ComicPageClient from "./ComicPageClient";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -33,7 +33,7 @@ export async function generateMetadata({
 export default async function ComicPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
