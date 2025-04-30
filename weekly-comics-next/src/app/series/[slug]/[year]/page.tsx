@@ -5,7 +5,7 @@ import SeriesPageClient from "./SeriesPageClient";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string; year: string };
+  params: Promise<{ slug: string; year: string }>;
 }): Promise<Metadata> {
   const { slug, year } = await params;
 
@@ -27,7 +27,7 @@ export async function generateMetadata({
 export default async function SeriesPage({
   params,
 }: {
-  params: { slug: string; year: string };
+  params: Promise<{ slug: string; year: string }>;
 }) {
   const { slug, year } = await params;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
