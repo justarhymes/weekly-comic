@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Head from "next/head"
 import { Grandstander} from "next/font/google";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
