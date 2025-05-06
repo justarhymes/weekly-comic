@@ -43,5 +43,9 @@ yarn-error.log
 .pytest_cache/
 .coverage
 
+# Playwright test output
+test-results/
+.playwright/.cache/
+
 # My stuff
 *.db

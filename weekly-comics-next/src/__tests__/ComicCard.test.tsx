@@ -6,7 +6,7 @@ import { renderWithProps } from '@/test-utils';
 // 👇 Mock framer-motion to inspect props passed to motion.div
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...rest }: any) => (
+    div: ({ children, ...rest }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-motion-props={JSON.stringify(rest)}>{children}</div>
     ),
   },
