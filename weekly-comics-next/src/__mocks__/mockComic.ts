@@ -1,0 +1,35 @@
+import type { Comic } from '@/app/types';
+
+export const mockComic: Comic = {
+  id: 999,
+  metron_id: 123456,
+  comicvine_id: 5345,
+  gcd_id: 9879,
+  slug: 'batman-2025-1',
+  title: 'Batman #1',
+  issue_number: '1',
+  summary: 'Bruce Wayne returns to Gotham as a new enemy emerges.',
+  release_date: '2025-05-01',
+  price: 3.99,
+  image: 'https://example.com/batman-1.jpg',
+  blur_data_url: '',
+  upc: '123456789012',
+  distributor_sku: 'BATMAN202501',
+  rating: 'T+',
+  page_count: 32,
+  api_source: 'metron',
+  is_custom: false,
+  creators: [
+    { name: 'Tom King', roles: ['Writer'] },
+    { name: 'Greg Capullo', roles: ['Artist'] },
+  ],
+  series: {
+    name: 'Batman',
+    slug: 'batman',
+    type: 'Ongoing',
+    genre: ['Superhero'],
+    volume: 1,
+    publisher: 'DC Comics',
+    start_year: 2025,
+  },
+};

@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComicCard matches the snapshot 1`] = `
+<div>
+  <div
+    data-motion-props="{"initial":{"opacity":0,"y":20},"animate":{"opacity":1,"y":0},"transition":{"duration":0.4,"ease":"easeOut","delay":0}}"
+  >
+    <a
+      aria-describedby="comic-price-999"
+      aria-labelledby="comic-999"
+      class="focus:outline-none focus-visible:ring-4 focus-visible:ring-rose-500 block"
+      href="/comics/batman-2025-1"
+      title="View details for Batman #1"
+    >
+      <article
+        class="group transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
+      >
+        <img
+          alt="Cover of Batman #1"
+          class="w-full h-auto object-cover transition duration-200 group-hover:opacity-90"
+          data-nimg="1"
+          decoding="async"
+          height="450"
+          loading="lazy"
+          src="/_next/image?url=https%3A%2F%2Fexample.com%2Fbatman-1.jpg&w=640&q=75"
+          srcset="/_next/image?url=https%3A%2F%2Fexample.com%2Fbatman-1.jpg&w=384&q=75 1x, /_next/image?url=https%3A%2F%2Fexample.com%2Fbatman-1.jpg&w=640&q=75 2x"
+          style="color: transparent;"
+          width="300"
+        />
+        <div
+          class="bg-rose-500 p-2 transition-colors duration-200 group-hover:bg-rose-400"
+        >
+          <h3
+            class="font-semibold text-sm line-clamp-1 text-white group-hover:text-rose-950 transition-colors duration-200"
+            id="comic-999"
+          >
+            Batman #1
+          </h3>
+          <p
+            class="text-rose-950 font-bold"
+            id="comic-price-999"
+          >
+            $3.99
+          </p>
+        </div>
+      </article>
+    </a>
+  </div>
+</div>
+`;

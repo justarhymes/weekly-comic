@@ -19,6 +19,7 @@ export default function IssueDetails({
               year: "numeric",
               month: "long",
               day: "numeric",
+              timeZone: "UTC",
             }).format(new Date(comic.release_date))}
           />
         )}
