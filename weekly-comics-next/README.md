@@ -31,6 +31,45 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 ---
 
+## 🧪 Testing
+
+### Unit Tests
+
+Unit tests are located in the `src/__tests__` directory and utilize Jest. To run these tests:
+
+```bash
+npm run test:unit
+```
+
+This command executes all unit tests without initiating Playwright tests.
+
+### End-to-End (E2E) Tests
+
+E2E tests are situated in the `e2e/` directory and employ Playwright. To execute these tests:
+
+```bash
+npx playwright test
+```
+
+To run a specific E2E test file:
+
+```bash
+npx playwright test e2e/comic-detail.spec.ts
+```
+
+### Test Artifacts
+
+Running Playwright tests generates artifacts in the `test-results/` directory, including `.last-run.json`. To prevent these artifacts from being committed to the repository, ensure the following entry exists in your `.gitignore` file:
+
+```gitignore
+test-results/
+```
+
+This addition helps maintain a clean repository by excluding test artifacts from version control.
+
+
+---
+
 ## Features
 
 - Browse weekly comic releases

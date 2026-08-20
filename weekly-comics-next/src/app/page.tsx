@@ -25,7 +25,10 @@ function getEndOfWeek() {
   return end;
 }
 
-function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number) {
+function debounce<T extends (...args: unknown[]) => void>(
+  func: T,
+  wait: number,
+) {
   let timeout: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
@@ -64,12 +67,16 @@ export default function Home() {
       const endOfWeek = getEndOfWeek();
 
       const res = await fetch(
-        `${API_URL}/comics?skip=${skipRef.current}&limit=${limit}&start_date=${startOfWeek.toISOString().slice(0, 10)}&end_date=${endOfWeek.toISOString().slice(0, 10)}`
+        `${API_URL}/comics?skip=${skipRef.current}&limit=${limit}&start_date=${startOfWeek.toISOString().slice(0, 10)}&end_date=${endOfWeek.toISOString().slice(0, 10)}`,
       );
       if (!res.ok) throw new Error("Failed to fetch comics");
       const newComics: Comic[] = await res.json();
 
-      newComics.sort((a, b) => new Date(a.release_date).getTime() - new Date(b.release_date).getTime());
+      newComics.sort(
+        (a, b) =>
+          new Date(a.release_date).getTime() -
+          new Date(b.release_date).getTime(),
+      );
 
       if (newComics.length === 0) {
         setHasMore(false);
@@ -122,10 +129,10 @@ export default function Home() {
   }, [initialLoading, loadingMore]);
 
   return (
-    <main className="flex-1 p-4 relative">
+    <main className='flex-1 p-4 relative'>
       {!initialLoading && comics.length === 0 && (
-        <div className="text-center text-gray-500 text-lg mt-10">
-          No comics released this week.
+        <div className='text-center text-gray-500 text-lg mt-10'>
+          Woops, no comics found for this week. Please check back later!
         </div>
       )}
 
@@ -134,19 +141,18 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col items-center justify-center absolute top-0 right-0 left-0 h-full space-y-4"
-          aria-hidden
-        >
+          className='flex flex-col items-center justify-center absolute top-0 right-0 left-0 h-full space-y-4'
+          aria-hidden>
           <div
-            className="h-12 w-12 border-4 border-t-transparent border-rose-500 rounded-full animate-spin"
-            style={{ animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)" }}
-          ></div>
+            className='h-12 w-12 border-4 border-t-transparent border-rose-500 rounded-full animate-spin'
+            style={{
+              animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+            }}></div>
           <motion.p
-            className="text-rose-500 font-semibold text-lg animate-pulse"
+            className='text-rose-500 font-semibold text-lg animate-pulse'
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-          >
+            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}>
             Loading Comics{".".repeat(dotCount)}
           </motion.p>
         </motion.div>
@@ -157,8 +163,7 @@ export default function Home() {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, amount: 0 }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-          >
+            className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
             {comics.map((comic, index) => (
               <ComicCard
                 key={`${comic.metron_id}-${comic.issue_number}`}
@@ -169,18 +174,23 @@ export default function Home() {
             ))}
           </motion.div>
           {loadingMore && (
-            <div className="flex justify-center items-center mt-8" aria-hidden>
+            <div className='flex justify-center items-center mt-8' aria-hidden>
               <div
-                className="h-6 w-6 border-4 border-t-transparent border-rose-400 rounded-full animate-spin"
-                style={{ animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)" }}
-              ></div>
+                className='h-6 w-6 border-4 border-t-transparent border-rose-400 rounded-full animate-spin'
+                style={{
+                  animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+                }}></div>
             </div>
           )}
         </>
       )}
 
-      <div role="status" aria-live="polite" className="sr-only">
-        {initialLoading || loadingMore ? "Loading more comics..." : !hasMore ? "No more comics to load." : ""}
+      <div role='status' aria-live='polite' className='sr-only'>
+        {initialLoading || loadingMore
+          ? "Loading more comics..."
+          : !hasMore
+            ? "No more comics to load."
+            : ""}
       </div>
     </main>
   );
